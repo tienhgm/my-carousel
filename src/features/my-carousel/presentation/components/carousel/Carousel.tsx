@@ -69,9 +69,6 @@ const Carousel: React.FC<Props> = ({
       <div
         ref={containerRef}
         className={styles["carousel-container"]}
-        style={{
-          transform: `translateX(${-currentIndex * computedSize}px)`,
-        }}
         {...handlers.container}
       >
         {visibleItems.map(({ item, virtualIdx }) => (
