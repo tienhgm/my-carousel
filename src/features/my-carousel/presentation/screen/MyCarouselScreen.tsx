@@ -3,7 +3,7 @@ const slideData = [
   {
     id: 1,
     title: "Slide 1",
-    image: "https://image/300x300",
+    image: "https://picsum.photos/id/1016/600/300",
     landing_page: "https://landingpage1",
   },
   {
