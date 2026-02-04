@@ -1,0 +1,67 @@
+.carousel-viewport {
+  width: 100%;
+  overflow: hidden;
+  margin: 50px auto;
+  position: relative;
+  background: #f0f0f0;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.carousel-container {
+  position: "relative";
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
+
+.carousel-viewport.is-dragging {
+  cursor: grabbing !important;
+}
+
+/* Nút điều hướng */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.3s ease,
+    opacity 0.3s ease;
+  opacity: 0;
+}
+
+/* Hiện nút khi người dùng hover vào carousel */
+.carousel-viewport:hover .nav-btn {
+  opacity: 1;
+}
+
+.nav-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.nav-btn.prev {
+  left: 10px;
+}
+.nav-btn.next {
+  right: 10px;
+}
+
+/* Ẩn nút trên mobile để dùng touch swipe */
+@media (max-width: 768px) {
+  .nav-btn {
+    display: none;
+  }
+}
