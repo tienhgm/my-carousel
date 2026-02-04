@@ -40,7 +40,7 @@ const slideData = [
 export default function MyCarouselScreen() {
   return (
     <>
-      <Carousel data={slideData} size={300} perView={3} />
+      <Carousel data={slideData} size={300} perView={2.5} />
     </>
   );
 }
