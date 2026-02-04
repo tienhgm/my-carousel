@@ -16,10 +16,9 @@
   will-change: transform;
 }
 
-.carousel-viewport.is-dragging {
+.carousel-viewport:global(.is-dragging) {
   cursor: grabbing !important;
 }
-
 /* Nút điều hướng */
 .nav-btn {
   position: absolute;

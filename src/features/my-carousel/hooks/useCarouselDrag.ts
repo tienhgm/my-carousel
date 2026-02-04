@@ -47,8 +47,8 @@ export function useCarouselDrag({
 
   const handleStart = (clientX: number) => {
     if (!containerRef.current || isAnimatingRef.current) return;
-
     isDragging.current = true;
+    containerRef.current.parentElement?.classList.add("is-dragging");
     hasMoved.current = false;
     startX.current = clientX;
 
@@ -73,7 +73,7 @@ export function useCarouselDrag({
     if (!isDragging.current || !containerRef.current) return;
 
     isDragging.current = false;
-
+    containerRef.current.parentElement?.classList.remove("is-dragging");
     const matrix = new DOMMatrixReadOnly(
       window.getComputedStyle(containerRef.current).transform,
     );
