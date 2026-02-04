@@ -10,7 +10,6 @@ interface Props {
   size: number;
   perView?: number;
   playTime?: number;
-  buffer?: number;
 }
 
 const Carousel: React.FC<Props> = ({
@@ -18,13 +17,13 @@ const Carousel: React.FC<Props> = ({
   size = 300,
   perView = 2.5,
   playTime = 3000,
-  buffer = 3,
 }) => {
   const slideCount = data.length;
   const { viewportRef, computedSize, isReady } = useCarouselResize({
     size,
     perView,
   });
+
   const {
     containerRef,
     currentIndex,
@@ -37,15 +36,22 @@ const Carousel: React.FC<Props> = ({
 
   const visibleItems = useMemo(() => {
     const items = [];
-    const start = currentIndex - buffer;
-    const end = currentIndex + buffer + Math.ceil(perView);
+    const range = Math.ceil(perView) + 2;
+
+    const start = Math.floor(currentIndex) - 1;
+    const end = start + range;
 
     for (let i = start; i <= end; i++) {
       const dataIdx = ((i % slideCount) + slideCount) % slideCount;
-      items.push({ item: data[dataIdx], virtualIdx: i });
+
+      items.push({
+        item: data[dataIdx],
+        virtualIdx: i,
+        uniqueKey: `slide-${dataIdx}-${i}`,
+      });
     }
     return items;
-  }, [currentIndex, data, slideCount, perView, buffer]);
+  }, [currentIndex, data, slideCount, perView]);
 
   return (
     <div
@@ -71,11 +77,13 @@ const Carousel: React.FC<Props> = ({
         className={styles["carousel-container"]}
         {...handlers.container}
       >
-        {visibleItems.map(({ item, virtualIdx }) => (
+        {visibleItems.map(({ item, virtualIdx, uniqueKey }) => (
           <div
-            key={`${item.id}-${virtualIdx}`}
+            key={uniqueKey}
             style={{
               position: "absolute",
+              top: 0,
+              left: 0,
               width: `${computedSize}px`,
               transform: `translateX(${virtualIdx * computedSize}px)`,
             }}

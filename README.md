@@ -105,7 +105,6 @@ Instead of hard-coding carousel behavior based on fixed assumptions from the pro
 - **`perView`**: Controls how many slides are visible within the viewport at once (supports fractional values such as 2.5)
 - **`size`**: Defines the fixed width (and height) of each carousel card
 - **`playTime`**: Configures the autoplay interval duration in milliseconds
-- **`buffer`**: Determines how many virtual slides are rendered before and after the current index
 
 ### Rationale
 
@@ -121,18 +120,27 @@ By exposing these values as props rather than fixing them according to the origi
 
 The carousel supports infinite looping without duplicating the entire data set
 
-- Only a limited set of virtual slides is rendered around the **`currentIndex`**, determined by **`buffer`** and **`perView`**
-- Each virtual slide is mapped back to the original data array using modulo arithmetic:
+- Only a limited set of virtual slides is rendered around the **`currentIndex`**, determined by **`perView`**
+- The render range is derived from **`perView`**:
+
+```bash
+const range = Math.ceil(perView) + 2;
+const start = Math.floor(currentIndex) - 1;
+const end = start + range;
+
+```
+
+Each virtual index is mapped back to the original data using modulo arithmetic:
 
 ```bash
 const dataIdx = ((i % slideCount) + slideCount) % slideCount;
+
 ```
 
 This approach ensures:
 
-- Safe access for negative and overflow indices
+- Safe handling of negative and overflow indices
 - Seamless looping in both directions
-- Improved performance compared to cloning the full slide list
 
 ### Preventing Concurrent Animations
 
@@ -160,21 +168,21 @@ To prevent unintended click events on carousel items during drag gestures:
 
 ### Snap-to-Slide on Drag End
 
-When a drag interaction ends:
+When a drag interaction ends, the carousel determines the next slide based on **user intent** rather than
+snapping to the nearest position.
 
-- The current transform position is read from the container using **`DOMMatrix`**
-- The closest slide index is calculated based on the slide width:
+The decision is derived from:
 
-```bash
-const closestIndex = Math.round(-currentActualX / size);
-
-```
+- Total drag distance (in pixels and slide units)
+- Drag direction
+- Drag velocity
 
 Behavior:
 
-- If the drag distance exceeds **`MIN_DRAG_DISTANCE`**, the carousel advances in the drag direction
-- Otherwise, it snaps back to the current slide
-  This guarantees consistent alignment and predictable movement.
+- Short or slow drags snap back to the current slide
+- Normal drags advance by one slide
+- Fast or long swipes may advance by multiple slides
+- The maximum jump is clamped to prevent loss of control
 
 ### Autoplay Pause on User Interaction
 
