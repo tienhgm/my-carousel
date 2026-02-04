@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 
-const SLIDE_SPEED = 450;
+const SLIDE_SPEED = 300;
 const MIN_DRAG_DISTANCE = 40;
 const VELOCITY_THRESHOLD = 0.3;
 interface UseCarouselDragProps {
@@ -75,7 +75,16 @@ export function useCarouselDrag({
     const diff = clientX - startX.current;
     if (Math.abs(diff) > 5) hasMoved.current = true;
 
-    currentTranslate.current = prevTranslate.current + diff;
+    const rawTranslate = prevTranslate.current + diff;
+
+    const minTranslate = -(currentIndex + 2) * size - size * 1.2;
+    const maxTranslate = -(currentIndex - 2) * size + size * 1.2;
+
+    currentTranslate.current = Math.min(
+      maxTranslate,
+      Math.max(minTranslate, rawTranslate),
+    );
+
     containerRef.current.style.transform = `translateX(${currentTranslate.current}px)`;
   };
 
@@ -119,10 +128,10 @@ export function useCarouselDrag({
 
     const jumpCount = Math.abs(finalNextIndex - currentIndex);
 
-    let dynamicSpeed = Math.max(300, 550 - absVelocity * 100) * 1.5;
-    if (jumpCount > 1) dynamicSpeed += 250; 
+    let dynamicSpeed = Math.max(300, 550 - absVelocity * 100);
+    if (jumpCount > 1) dynamicSpeed += 150;
 
-    moveSlide(finalNextIndex, Math.min(600, dynamicSpeed)); 
+    moveSlide(finalNextIndex, Math.min(400, dynamicSpeed));
   };
 
   const resetMoved = () => {
