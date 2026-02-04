@@ -83,7 +83,6 @@ Responsible for rendering and feature-level state orchestration:
 
 - **components**: reusable UI building blocks
 - **screen**: composed feature views
-- **store**: feature-scoped state management
 
 This structure ensures:
 
