@@ -3,6 +3,7 @@ import styles from "./style.module.css";
 import CarouselCard from "../carouselCard/CarouselCard";
 import type { CarouselItem } from "@/features/my-carousel/models/my-carousel.model";
 import { useCarouselDrag } from "@/features/my-carousel/hooks/useCarouselDrag";
+import { useCarouselResize } from "@/features/my-carousel/hooks/useCarouselResize";
 
 interface Props {
   data: CarouselItem[];
@@ -20,7 +21,10 @@ const Carousel: React.FC<Props> = ({
   buffer = 3,
 }) => {
   const slideCount = data.length;
-
+  const { viewportRef, computedSize, isReady } = useCarouselResize({
+    size,
+    perView,
+  });
   const {
     containerRef,
     currentIndex,
@@ -29,7 +33,7 @@ const Carousel: React.FC<Props> = ({
     resetMoved,
     moveSlide,
     handlers,
-  } = useCarouselDrag({ size, playTime });
+  } = useCarouselDrag({ size: computedSize, playTime });
 
   const visibleItems = useMemo(() => {
     const items = [];
@@ -45,10 +49,13 @@ const Carousel: React.FC<Props> = ({
 
   return (
     <div
+      ref={viewportRef}
       className={styles["carousel-viewport"]}
       style={{
         maxWidth: `${size * perView}px`,
-        height: `${size}px`,
+        height: `${computedSize}px`,
+        opacity: isReady ? 1 : 0,
+        visibility: isReady ? "visible" : "hidden",
       }}
       {...handlers.viewport}
     >
@@ -63,7 +70,7 @@ const Carousel: React.FC<Props> = ({
         ref={containerRef}
         className={styles["carousel-container"]}
         style={{
-          transform: `translateX(${-currentIndex * size}px)`,
+          transform: `translateX(${-currentIndex * computedSize}px)`,
         }}
         {...handlers.container}
       >
@@ -72,13 +79,13 @@ const Carousel: React.FC<Props> = ({
             key={`${item.id}-${virtualIdx}`}
             style={{
               position: "absolute",
-              width: `${size}px`,
-              transform: `translateX(${virtualIdx * size}px)`,
+              width: `${computedSize}px`,
+              transform: `translateX(${virtualIdx * computedSize}px)`,
             }}
           >
             <CarouselCard
               item={item}
-              cardWidth={size}
+              cardWidth={computedSize}
               hasMovedRef={hasMoved}
               onResetMoved={resetMoved}
             />

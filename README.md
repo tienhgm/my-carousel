@@ -197,3 +197,37 @@ The carousel fully supports both mouse and touch interactions:
 - Desktop drag via mouse events
 - Mobile swipe via touch events
   Both input types share the same interaction logic by normalizing input through **`clientX`**, ensuring consistent behavior across devices.
+
+### Dynamic Responsive Resizing
+
+The carousel dynamically adapts to different screen sizes while preserving the intended perView ratio (e.g. always showing exactly 2.5 cards).
+
+This is handled by a dedicated hook: **`useCarouselResize`**, which observes the actual viewport size and recalculates slide dimensions accordingly.
+
+#### How It Works
+
+- The carousel has a design-time maximum width defined as:
+
+```bash
+maxWidth = size * perView
+```
+
+- If the viewport width is **greater than or equal to `maxWidth`**:
+  - Each card keeps its fixed **`size`**
+- If the viewport width is **smaller**:
+  - Slide width is recalculated as viewportWidth / perView
+
+```bash
+const computedSize =
+  viewportWidth && viewportWidth < size * perView
+    ? viewportWidth / perView
+    : size;
+
+```
+
+#### Resize Detection
+
+- Uses **`ResizeObserver`** on the carousel viewport
+- Responds to container-based layout changes (not only window resize)
+- Avoids global resize listeners and media queries
+- Minimizes layout flickering by using **`useLayoutEffect`** to update dimensions before the browser repaints
